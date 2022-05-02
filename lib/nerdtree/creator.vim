@@ -44,6 +44,15 @@ function! s:Creator.CreateTabTree(name)
     call creator.createTabTree(a:name)
 endfunction
 
+function! s:Creator.ReloadFromCWD()
+    let l:path = self._pathForString(getcwd())
+    call self._createNERDTree(l:path, 'tab')
+    call b:NERDTree.render()
+    call b:NERDTree.root.putCursorHere(0, 0)
+
+    call self._broadcastInitEvent()
+endfunction
+
 " FUNCTION: s:Creator.createTabTree(a:name) {{{1
 " name: the name of a bookmark or a directory
 function! s:Creator.createTabTree(name)

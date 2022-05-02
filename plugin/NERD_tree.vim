@@ -144,12 +144,24 @@ call nerdtree#ui_glue#setupCommands()
 
 " SECTION: Auto commands {{{1
 "============================================================
+function! s:NERDTree_OnExit()
+    if g:NERDTree.IsOpen()
+        call b:NERDTree.ui.saveScreenState()
+    endif
+endfunction
+function! s:NERDTree_OnEnter()
+    stopinsert
+    if !exists('t:NERDTreeBufName')
+        " We might have "loaded" from a session
+        call g:NERDTreeCreator.ReloadFromCWD()
+    endif
+endfunction
 augroup NERDTree
     "Save the cursor position whenever we close the nerd tree
-    exec 'autocmd BufLeave,WinLeave '. g:NERDTreeCreator.BufNamePrefix() .'* if g:NERDTree.IsOpen() | call b:NERDTree.ui.saveScreenState() | endif'
+    exec 'autocmd BufLeave,WinLeave '. g:NERDTreeCreator.BufNamePrefix() .'* call s:NERDTree_OnExit()'
 
     "disallow insert mode in the NERDTree
-    exec 'autocmd BufEnter,WinEnter '. g:NERDTreeCreator.BufNamePrefix() .'* stopinsert'
+    exec 'autocmd BufEnter,WinEnter '. g:NERDTreeCreator.BufNamePrefix() .'* call s:NERDTree_OnEnter()'
 augroup END
 
 if g:NERDTreeHijackNetrw
