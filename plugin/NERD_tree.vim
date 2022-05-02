@@ -151,9 +151,11 @@ function! s:NERDTree_OnExit()
 endfunction
 function! s:NERDTree_OnEnter()
     stopinsert
-    if !exists('t:NERDTreeBufName')
-        " We might have "loaded" from a session
-        call g:NERDTreeCreator.ReloadFromCWD()
+    if !exists('b:NERDTree')
+        " We should only get here if we "loaded" from a view/session
+        "   a)  the buffer/window name triggered our `autocmd`s
+        "   b)  yet the main buffer variable is not set
+        call g:NERDTreeCreator.HandleViewLoadUsingCWD()
     endif
 endfunction
 augroup NERDTree

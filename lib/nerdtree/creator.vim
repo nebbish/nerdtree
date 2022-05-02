@@ -44,10 +44,27 @@ function! s:Creator.CreateTabTree(name)
     call creator.createTabTree(a:name)
 endfunction
 
-function! s:Creator.ReloadFromCWD()
+" FUNCTION: s:Creator.HandleViewLoadUsingCWD(a:name) {{{1
+function! s:Creator.HandleViewLoadUsingCWD()
+    " NOTE:  this should ONLY be called by our `autocmd`s for an "empty"
+    "        buffer/window (one without any tab/buffer variables set)
+    "
+    "        That situation should only correspond to a view/session load
+    "        context -- where the buffer/window name triggers our `autocmd`
+    "
     let l:path = self._pathForString(getcwd())
-    call self._createNERDTree(l:path, 'tab')
+
+    " This appears to be the minimum necessary value for closing the
+    " existing buffer with `g:NERDTree.Close()`
     let t:NERDTreeBufName = bufname()
+
+    " Always close/cleanup the existing window so we can re-make it
+    call g:NERDTree.Close()
+    call self._removeTreeBufForTab()
+
+    " At this point -- we finish just like `createTabTree` just below.
+    call self._createTreeWin()
+    call self._createNERDTree(l:path, 'tab')
     call b:NERDTree.render()
     call b:NERDTree.root.putCursorHere(0, 0)
 
