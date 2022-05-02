@@ -47,6 +47,7 @@ endfunction
 function! s:Creator.ReloadFromCWD()
     let l:path = self._pathForString(getcwd())
     call self._createNERDTree(l:path, 'tab')
+    let t:NERDTreeBufName = bufname()
     call b:NERDTree.render()
     call b:NERDTree.root.putCursorHere(0, 0)
 
