@@ -308,7 +308,20 @@ function! s:findAndRevealPath(pathStr) abort
     endif
 
     try
-        let l:pathStr = g:NERDTreePath.Resolve(l:pathStr)
+        "
+        " NOTE: the 'NERDTreeFindWithResolve' option was added for a
+        "       situation I experience on Windows, where the currently
+        "       edited file *actually* lives on a network share, but
+        "       was opened via a symbolic link to the share.
+        "
+        "       In that case, "resolving" the path yields the full
+        "       \\server\share notation which will never be found in the tree
+        "
+        " TODO: update the help and add this value
+        "
+        if g:NERDTreeFindWithResolve
+            let l:pathStr = g:NERDTreePath.Resolve(l:pathStr)
+        endif
         let l:pathObj = g:NERDTreePath.New(l:pathStr)
     catch /^NERDTree.InvalidArgumentsError/
         call nerdtree#echoWarning('invalid path')
